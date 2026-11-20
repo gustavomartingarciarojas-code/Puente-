@@ -146,13 +146,13 @@ class MainActivity : Activity() {
 
         val pasos = tarjeta()
         subtitulo(pasos, "Paso 1 — Activar Puente en Accesibilidad")
-        texto(pasos, "Abrí Accesibilidad, entrá a «Puente» (puede estar dentro de «Apps instaladas» o «Servicios descargados») y activalo. Android va a avisar que la app puede ver y controlar la pantalla: es lo que necesita para mover el puntero y escribir.", TENUE)
+        texto(pasos, "Abrí Accesibilidad. Puente está arriba de todo, en «Aplicaciones descargadas». Tocalo y activalo. Android va a avisar que la app puede ver y controlar la pantalla: es lo que necesita para mover el puntero y escribir.", TENUE)
         pasos.addView(boton("Abrir Accesibilidad", true) {
             startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         })
         pasos.addView(espacio(0, 12))
         subtitulo(pasos, "Si el interruptor aparece gris («configuración restringida»)")
-        texto(pasos, "Pasa con las apps instaladas desde un APK. Primero intentá activarlo una vez (aparece el aviso de configuración restringida); recién ahí Android habilita la opción. Después tocá el botón de abajo, en la info de la app abrí el menú de tres puntos de arriba a la derecha, elegí permitir la configuración restringida y confirmá con tu huella o PIN. Volvé al paso 1.", TENUE)
+        texto(pasos, "Pasa con las apps instaladas desde un APK: Puente aparece en gris con «Controlada por la configuración restringida». Tocalo una vez (sale el aviso); recién ahí Android habilita la opción. Después tocá el botón de abajo, en la info de la app abrí el menú de tres puntos de arriba a la derecha, elegí permitir la configuración restringida y confirmá con tu huella o PIN. Volvé al paso 1.", TENUE)
         pasos.addView(boton("Abrir info de Puente", false) { abrirInfoApp() })
 
         val nota = tarjeta()
