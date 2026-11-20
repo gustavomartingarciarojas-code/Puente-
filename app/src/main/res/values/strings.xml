@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Puente</string>
+    <string name="descripcion_accesibilidad">Puente recibe el mouse y el teclado de tu tablet por la red Wi-Fi y los usa en este celular: mueve un puntero en pantalla, toca donde hacés clic y escribe en el campo de texto activo. Solo acepta conexiones con el PIN que muestra la app.</string>
+</resources>
