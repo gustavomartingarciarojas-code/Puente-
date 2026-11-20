@@ -13,9 +13,12 @@ import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
 import android.view.Display
+import android.view.InputDevice
+import android.view.KeyCharacterMap
 import android.view.KeyEvent
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
+import android.view.inputmethod.EditorInfo
 import ar.trainingwraps.puente.Protocolo.msg
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -396,8 +399,44 @@ class ReceptorService : AccessibilityService() {
             }
             if (accion != 0) { ic.performContextMenuAction(accion); return }
         }
+        // Enter sin Shift: si el campo tiene una acción propia (Enviar, Buscar, Ir), se ejecuta.
+        val esEnter = k == KeyEvent.KEYCODE_ENTER || k == KeyEvent.KEYCODE_NUMPAD_ENTER
+        if (esEnter && meta and KeyEvent.META_SHIFT_ON == 0) {
+            val info = inputMethod?.currentInputEditorInfo
+            if (info != null) {
+                val accion = info.imeOptions and EditorInfo.IME_MASK_ACTION
+                val sinAccion = info.imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION != 0
+                if (!sinAccion && accion != EditorInfo.IME_ACTION_NONE &&
+                    accion != EditorInfo.IME_ACTION_UNSPECIFIED
+                ) {
+                    ic.performEditorAction(accion)
+                    return
+                }
+            }
+        }
+        // Se manda como tecla de un teclado físico (no virtual): así las apps de chat
+        // tratan Enter como "enviar" y Shift + Enter como salto de línea.
         val t = SystemClock.uptimeMillis()
-        ic.sendKeyEvent(KeyEvent(t, t, KeyEvent.ACTION_DOWN, k, 0, meta))
-        ic.sendKeyEvent(KeyEvent(t, t, KeyEvent.ACTION_UP, k, 0, meta))
+        val disp = tecladoFisico()
+        val fuente = InputDevice.SOURCE_KEYBOARD
+        ic.sendKeyEvent(KeyEvent(t, t, KeyEvent.ACTION_DOWN, k, 0, meta, disp, 0, 0, fuente))
+        ic.sendKeyEvent(KeyEvent(t, t, KeyEvent.ACTION_UP, k, 0, meta, disp, 0, 0, fuente))
+    }
+
+    private var idTeclado: Int? = null
+
+    /** Id de un dispositivo de teclado real del celular (si no hay, el teclado virtual). */
+    private fun tecladoFisico(): Int {
+        idTeclado?.let { return it }
+        var id = KeyCharacterMap.VIRTUAL_KEYBOARD
+        for (d in InputDevice.getDeviceIds()) {
+            val dev = InputDevice.getDevice(d) ?: continue
+            if (!dev.isVirtual && dev.supportsSource(InputDevice.SOURCE_KEYBOARD)) {
+                id = d
+                if (dev.keyboardType == InputDevice.KEYBOARD_TYPE_ALPHABETIC) break
+            }
+        }
+        idTeclado = id
+        return id
     }
 }
