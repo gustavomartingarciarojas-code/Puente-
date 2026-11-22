@@ -16,6 +16,7 @@ import android.view.Display
 import android.view.InputDevice
 import android.view.KeyCharacterMap
 import android.view.KeyEvent
+import android.view.ViewConfiguration
 import android.view.WindowManager
 import android.view.accessibility.AccessibilityEvent
 import android.view.inputmethod.EditorInfo
@@ -316,10 +317,14 @@ class ReceptorService : AccessibilityService() {
         var dist = 0f
         for (p in recorrido) dist = max(dist, hypot(p[0] - p0[0], p[1] - p0[1]))
 
+        // El mouse siempre tiembla un poco al hacer clic. Si el movimiento es chico (o el clic fue rápido),
+        // es un toque en el punto donde se apretó, no un arrastre: así no se pierden clics ni dobles clics.
+        val margen = ViewConfiguration.get(this).scaledTouchSlop.toFloat()
+        val esToque = dist < margen || (dur < 250 && dist < margen * 3)
         val path = Path()
         path.moveTo(p0[0], p0[1])
         val duracion: Long
-        if (dist < 12f) {
+        if (esToque) {
             duracion = if (dur < 450) 40L else dur.coerceIn(500L, 3000L)
         } else {
             val paso = max(1, recorrido.size / 60)

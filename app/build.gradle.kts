@@ -11,8 +11,8 @@ android {
         applicationId = "ar.trainingwraps.puente"
         minSdk = 33
         targetSdk = 35
-        versionCode = 3
-        versionName = "1.1"
+        versionCode = 4
+        versionName = "1.2"
     }
 
     // Firma fija: las próximas versiones se instalan encima sin desinstalar.
